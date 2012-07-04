@@ -1,5 +1,7 @@
 package tom.birthday;
 
+import android.util.Log;
+
 public class Drawing {
 
 	private String s;
@@ -42,5 +44,30 @@ public class Drawing {
 		newString += (s.indexOf("9")+1);
 		
 		return newString;
+	}
+	public void mutate() {
+		for(int i = 0; i<=s.length(); i++)
+		{
+			if((Math.floor(Math.random()*1000))==0)
+			{
+				char first = '0';
+				while(first=='0')
+				{
+					first = s.charAt((int)Math.floor(Math.random()*9));
+				}
+				char second = '0';
+				while(second=='0')
+				{
+					second = s.charAt((int)Math.floor(Math.random()*9));
+				}
+				
+				Log.d("MUTATION", s + " swapping " + first + " & " + second);
+				
+				s.replace(first, 'a');
+				s.replace(second, 'b');
+				s.replace('a', second);
+				s.replace('b', first);
+			}
+		}
 	}
 }

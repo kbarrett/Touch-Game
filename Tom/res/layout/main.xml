@@ -9,71 +9,80 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
+        android:layout_margin="25dp"
         android:layout_alignParentTop="true"
-        android:src="@drawable/ic_launcher" />
+        android:src="@drawable/original_button" />
 
     <ImageView
         android:id="@+id/topmiddle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
+        android:layout_margin="25dp"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/ic_launcher" />
+        android:src="@drawable/original_button" />
 
     <ImageView
         android:id="@+id/bottomleft"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:layout_margin="25dp"
         android:layout_alignParentLeft="true"
-        android:src="@drawable/ic_launcher" />
+        android:src="@drawable/original_button" />
 
     <ImageView
         android:id="@+id/bottomright"
         android:layout_width="wrap_content"
+        android:layout_margin="25dp"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:src="@drawable/ic_launcher" />
+        android:src="@drawable/original_button" />
 
     <ImageView
         android:id="@+id/bottommiddle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="25dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/ic_launcher" />
+        android:src="@drawable/original_button" />
 
     <ImageView
         android:id="@+id/topright"
         android:layout_width="wrap_content"
+        android:layout_margin="25dp"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:src="@drawable/ic_launcher" />
+        android:src="@drawable/original_button" />
 
     <ImageView
         android:id="@+id/middlemiddle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="25dp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:src="@drawable/ic_launcher" />
+        android:src="@drawable/original_button" />
 
     <ImageView
         android:id="@+id/middleright"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="25dp"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:src="@drawable/ic_launcher" />
+        android:src="@drawable/original_button" />
 
     <ImageView
         android:id="@+id/middleleft"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="25dp"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
-        android:src="@drawable/ic_launcher" />
+        android:src="@drawable/original_button" />
 
 </RelativeLayout>

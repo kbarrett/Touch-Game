@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.KeyguardManager;
 import android.app.KeyguardManager.KeyguardLock;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -26,10 +28,18 @@ public class FirstActivity extends Activity{
 	String s = "";
 	GestureDetector detector;
 	
+	Bitmap originalButton;
+	Bitmap wrongbutton;
+	Bitmap rightbutton;
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        
+        originalButton = BitmapFactory.decodeResource(getResources(),R.drawable.original_button);
+    	wrongbutton = BitmapFactory.decodeResource(getResources(),R.drawable.wrong_button);
+    	rightbutton = BitmapFactory.decodeResource(getResources(),R.drawable.right_button);
         
         final View rellayout = findViewById(R.id.relativelayout);
         
@@ -131,9 +141,50 @@ public class FirstActivity extends Activity{
 	private void reset()
 	{
 		boolean isNice = judge.isNice(Drawing.fromOrderedToWhere(s));
-		Log.d("s is " + s, isNice+"");
+		Log.d(isNice+"", "s is " + s + ", with where value: " + Drawing.fromOrderedToWhere(s));
+		
+		for(int i = 1; i<=9; i++)
+		{
+			ImageView view = null;
+			switch(i)
+			{
+			case 1 : {view = (ImageView)findViewById(R.id.topleft); break;}
+			case 2 : {view = (ImageView)findViewById(R.id.topmiddle); break;}
+			case 3 : {view = (ImageView)findViewById(R.id.topright); break;}
+			case 4 : {view = (ImageView)findViewById(R.id.middleleft); break;}
+			case 5 : {view = (ImageView)findViewById(R.id.middlemiddle); break;}
+			case 6 : {view = (ImageView)findViewById(R.id.middleright); break;}
+			case 7 : {view = (ImageView)findViewById(R.id.bottomleft); break;}
+			case 8 : {view = (ImageView)findViewById(R.id.bottommiddle); break;}
+			case 9 : {view = (ImageView)findViewById(R.id.bottomright); break;}
+			}
+			
+			if(s.contains(i+""))
+			{				
+				if(isNice) {view.setImageBitmap(rightbutton);}
+				else {view.setImageBitmap(wrongbutton);}
+			}
+			else
+			{
+				view.setImageBitmap(originalButton);
+			}
+		}
+		
 		s = "";
-		//reset pictures
+	}
+	
+	private void resetImages()
+	{
+		RelativeLayout layout = (RelativeLayout) findViewById(R.id.relativelayout);
+		for(int i = 0; i<layout.getChildCount(); i++)
+		{
+			View view1 = layout.getChildAt(i);
+			if(view1 instanceof ImageView)
+			{
+				ImageView view = (ImageView) view1;
+				view.setImageBitmap(originalButton);
+			}
+		}
 	}
 	
 	private void onSuccess()
