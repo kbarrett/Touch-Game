@@ -1,0 +1,7 @@
+
+.metadata/*
+*.class
+Tom/.settings/org.eclipse.jdt.core.prefs
+Tom/gen/tom/birthday/R.java
+Tom/project.properties
+Tom/proguard.cfg
