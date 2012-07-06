@@ -4,9 +4,12 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.KeyguardManager;
 import android.app.KeyguardManager.KeyguardLock;
-import android.content.DialogInterface;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -18,6 +21,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
@@ -31,7 +35,34 @@ public class FirstActivity extends Activity{
 	private Bitmap wrongbutton;
 	private Bitmap rightbutton;
 	
+	private ImageView previm;
+	
 	private int vibratetime = 40;
+
+	private int current = 0;
+	private float[][] xvalues = new float[9][2];
+	private float[][] yvalues = new float[9][2];
+	
+	private class LineDraw extends View
+	{
+		public LineDraw(Context context) {
+			super(context);
+		}
+
+		@Override
+		protected void onDraw(Canvas canvas) 
+		{
+			for(int i = 0; i<current; i++)
+			{
+				Paint p = new Paint();
+		        p.setColor(Color.WHITE);
+			    p.setStrokeWidth(15);
+			    canvas.drawLine(xvalues[i][0], yvalues[i][0], xvalues[i][1], yvalues[i][1], p);
+			    
+			    canvas.drawCircle(0.5f*(xvalues[i][1] + xvalues[i][0]), 0.5f*(yvalues[i][1] + yvalues[i][0]), 30, p);
+			}
+		}
+	}
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,8 +74,12 @@ public class FirstActivity extends Activity{
     	rightbutton = BitmapFactory.decodeResource(getResources(),R.drawable.right_button);
     	
     	judge = new Judge();
-        
+    	
         final View rellayout = findViewById(R.id.relativelayout);
+        
+    	final LineDraw lineDraw = new LineDraw(this);
+    	lineDraw.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+        ((RelativeLayout)rellayout).addView(lineDraw);
         
         rellayout.setOnTouchListener(new OnTouchListener(){
         	
@@ -57,12 +92,15 @@ public class FirstActivity extends Activity{
         		}
         		
         		else
-        		{   
+        		{  
 	                RelativeLayout layout = (RelativeLayout)v;
 	
 	                for(int i = 0; i < layout.getChildCount(); i++)
 	                {
 	                    View view = layout.getChildAt(i);
+	                    
+	                    if(!(view instanceof ImageView)) {continue;}
+	                    
 	                    Rect outRect = new Rect(view.getLeft(), view.getTop(), view.getRight(), view.getBottom());
 	
 	                    if(outRect.contains((int)event.getX(), (int)event.getY()))
@@ -123,6 +161,36 @@ public class FirstActivity extends Activity{
 	                        	Vibrator vib = (Vibrator)getSystemService(VIBRATOR_SERVICE);
 	                        	vib.vibrate(vibratetime);
 	                        	s+=which;
+	                        
+		                        if(view instanceof ImageView)
+		                        {
+			                        if(previm==null)
+			                        {
+			                        	previm = (ImageView) view;
+			                        }
+			                        else
+			                        {
+			                        	float[] x =
+			                        		{
+			                        			(float) (previm.getLeft() + (0.5 * previm.getWidth())),
+			                        			(float) (view.getLeft() + (0.5 * view.getWidth()))
+			                        		};
+			                        	float[] y = 
+			                        		{
+			                        			(float) (previm.getTop() + (0.5 * previm.getHeight())), 
+			                        			(float) (view.getTop() + (0.5 * view.getHeight()))
+			                        		};
+			                        	
+			                        	xvalues[current] = x;
+			                        	yvalues[current] = y;
+			                        	
+			                        	current++;
+			                        	
+			                        	lineDraw.invalidate();
+			                        	
+			                        	previm = (ImageView) view;
+			                        }
+		                        }
 	                        }
 	                        
 	                        return true;
@@ -176,6 +244,25 @@ public class FirstActivity extends Activity{
    
 	private void reset()
 	{
+		if(s.equals(""))
+		{
+			xvalues = new float[9][2];
+			yvalues = new float[9][2];
+			current = 0;
+			previm = null;
+			
+			RelativeLayout rellay = ((RelativeLayout)findViewById(R.id.relativelayout));
+			for(int i = 0; i<rellay.getChildCount(); i++)
+			{
+				View v = rellay.getChildAt(i);
+				if(v instanceof ImageView)
+				{
+					ImageView view = (ImageView) v;
+					view.setImageBitmap(originalButton);
+				}
+			}
+			return;
+		}
 		boolean isNice = judge.isNice(Drawing.fromOrderedToWhere(s));
 		Log.d(isNice+"", "s is " + s + ", with where value: " + Drawing.fromOrderedToWhere(s));
 		

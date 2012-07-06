@@ -139,8 +139,6 @@ public class Judge {
 				}
 			}
 			currentDrawings = newDrawings;
-			
-			Log.d("At end of iteration " + j + " currentDrawings", currentDrawings.toString());
 		}
 		
 		return checkFailure(d);
