@@ -11,6 +11,8 @@ import android.util.Log;
 public class Judge {
 
 	private ArrayList<Drawing> previousDrawings = new ArrayList<Drawing>();
+	private HashMap<String, Integer> failedDrawings = new HashMap<String, Integer>();
+	private int maxUntilAccept = 5;
 	
 	public Judge()
 	{
@@ -66,46 +68,72 @@ public class Judge {
 	{
 		if(d.toString().length()==0) {return false;}
 		
-		int iterations = 1;
-		int maxNumber = 20;
-		for(int j = 0; j<=iterations; j++)
+		int iterations = 5;
+		int maxNumber = 50;
+		
+		@SuppressWarnings("unchecked")
+		ArrayList<Drawing> currentDrawings = (ArrayList<Drawing>)previousDrawings.clone();
+		
+		if(symmetrical(d))
 		{
-
-			ArrayList<Drawing> currentDrawings = (ArrayList<Drawing>)previousDrawings.clone();
-			
-			HashMap<Drawing, Byte> sameCharacters = new  HashMap<Drawing, Byte>();
-			int total = 0;
+			Log.d("SYMMETRICAL", d + " is symmetrical");
+			if(Math.floor(Math.random()*3)==0)
+			{
+				if(!previousDrawings.contains(d))
+				{
+					previousDrawings.add(d);
+					return true;
+				}
+			}
+		}
+		else
+		{
+			Log.d("NOT SYMMETRICAL", d + " is not symmetrical");
+		}
+		
+		for(int j = 0; j<=iterations; j++)
+		{	
+			ArrayList<Drawing> sameCharacters = new  ArrayList<Drawing>();
 			for(Drawing previousDrawing : currentDrawings)
 			{
-				if(previousDrawing.equals(d)) {previousDrawings.add(d); return true;}
-				
-				byte score = 0;
+				if(previousDrawing.equals(d))
+				{
+					if(!previousDrawings.contains(d))
+					{
+						previousDrawings.add(d); 
+					}
+					return true;
+				}
 				
 				for(int i=0 ; i<d.getLength(); i++)
 				{
-					if(d.get(i)==previousDrawing.get(i)) {++score;}
+					if(d.get(i)==previousDrawing.get(i))
+					{
+						sameCharacters.add(previousDrawing);
+					}
 				}
-				
-				sameCharacters.put(previousDrawing, new Byte(score));
-				total += score;
 			}
 			
-			if(j==iterations) {return false;}
+			if(j==iterations) {return checkFailure(d);}
 			
-			int size = Math.max(maxNumber, currentDrawings.size() - (currentDrawings.size()%2));
+			int size = Math.min(maxNumber, currentDrawings.size() - (currentDrawings.size()%2));
 			Log.d("The size chosen is " + size, "maxNumber = " + maxNumber);
 			ArrayList<Drawing> newDrawings = new ArrayList<Drawing>(size);
+			
 			for(int i = 0; i<size; i++)
 			{
-				Drawing first = currentDrawings.get((int)Math.floor(Math.random()*currentDrawings.size()));
-				Drawing second = currentDrawings.get((int)Math.floor(Math.random()*currentDrawings.size()));
+				int firstposition = (int)Math.floor(Math.random()*sameCharacters.size());
+				Drawing first = sameCharacters.get(firstposition);
 				
+				int secondposition = (int)Math.floor(Math.random()*sameCharacters.size());
+				Drawing second = sameCharacters.get(secondposition);
+
 				crossOver(newDrawings, first, second);
 			}
 			
 			for(Drawing draw : newDrawings)
 			{
-				if(!draw.equals("000000000"))
+				if(StringWithProperties.countZeroes(draw.toString())<8)
 				{
 					draw.mutate();
 				}
@@ -115,7 +143,56 @@ public class Judge {
 			Log.d("At end of iteration " + j + " currentDrawings", currentDrawings.toString());
 		}
 		
-		return false;
+		return checkFailure(d);
+	}
+	
+	private boolean symmetrical(Drawing d) {
+		int max = 0;
+		int[] draw = new int[d.getLength()];
+		for(int i = 0; i<d.getLength(); i++)
+		{ 
+			draw[i] = d.get(i);
+			max = Math.max(max, draw[i]);
+		}
+		if(max==0) {return true;}
+		Log.d("MAX", ""+max);
+		
+		return    (same(max,draw[0],draw[8]) && same(max,draw[1],draw[5]) && same(max,draw[3],draw[7])) // diagonal /
+				||(same(max,draw[0],draw[2]) && same(max,draw[3],draw[5]) && same(max,draw[6],draw[8])) //vertical
+				||(same(max,draw[0],draw[6]) && same(max,draw[1],draw[7]) && same(max,draw[2],draw[8])) //horizontal
+				||(same(max,draw[1],draw[3]) && same(max,draw[2],draw[6]) && same(max,draw[5],draw[7])); //diagonal \
+	}
+	
+	private boolean same(int max, int a, int b)
+	{
+		return     (a==b && a==0)
+				|| (max%2==1 && max - a + 1 == b)
+				|| (max%2==0 && max - a == b);
+	}
+
+	private boolean checkFailure(Drawing draw)
+	{
+		String d = draw.toString();
+		if(failedDrawings.get(d)!=null)
+		{
+			int num = failedDrawings.get(d);
+			if(num>=maxUntilAccept)
+			{
+				previousDrawings.add(draw);
+				return true;
+			}
+			else
+			{
+				failedDrawings.remove(d);
+				failedDrawings.put(d, num+1);
+				return false;
+			}
+		}
+		else
+		{
+			failedDrawings.put(d, 1);
+			return false;
+		}
 	}
 	
 	private void crossOver(ArrayList<Drawing> newDrawings, Drawing first, Drawing second)
@@ -125,57 +202,42 @@ public class Judge {
 		String replacementA = first.getUpTo(crossoverPoint) + second.getAfter(crossoverPoint);
 		String replacementB = first.getAfter(crossoverPoint) + second.getUpTo(crossoverPoint);
 		
-		correct(replacementA);
-		correct(replacementB);
+		replacementA = correct(replacementA);
+		replacementB = correct(replacementB);
 		
 		newDrawings.add(new Drawing(replacementA));
 		newDrawings.add(new Drawing(replacementB));
 	}
 	
-	private void correct(String string)
-	{
+	private String correct(String string)
+	{	
+		String newString = "000000000";
 		
-		//NOT WORKING
-		Log.d("precorrecting", string);
-		
-		StringWithProperties propString = new StringWithProperties(string);
-		StringWithProperties newString = new StringWithProperties("000000000");
-		
-		int numberofzeroes = 0;
-		for(int i = 0; i<propString.getString().length(); i++)
+		int current = 1;
+		for(int i = 0; i<string.length(); i++)
 		{
-			if(numberofzeroes>=propString.getNumberOfZeroes())
-			{
-				break;
-			}
 			int minimum = 10;
 			int locofmin = 0;
-			for(int j = 0; j<propString.getString().toCharArray().length; j++)
+			for(int j = 0; j<string.length(); j++)
 			{
-				if(numberofzeroes>=propString.getNumberOfZeroes())
-				{
-					break;
-				}
-				char propChar = propString.getString().toCharArray()[j];
-				if(propChar=='0')
-				{
-					Log.d("ZERO", "number of zeros " + numberofzeroes);
-					numberofzeroes++; continue;
-				}
-				if(propChar<minimum)
+				int propChar = Integer.parseInt(""+string.charAt(j));
+				if(propChar!=0 && propChar<minimum)
 				{
 					minimum = propChar;
 					locofmin = j;
 				}
 			}
-			Log.d("PREREPLACE", "propString" + propString.getString() + " locofmin: " + locofmin + " newSTring: " + newString + " minimum: " + minimum);
-			propString.replaceChar(locofmin, '0');
-			newString.replaceChar(locofmin, (char)minimum);
-			Log.d("POSTREPLACE", "propString" + propString.getString() + " newSTring: " + newString);
+			if(minimum<10)
+			{
+				string = StringWithProperties.replaceChar(string,locofmin, 0);
+				newString = StringWithProperties.replaceChar(newString,locofmin, current++);
+			}
+			else
+			{
+				break;
+			}
 		}
-		
-		string = newString.getString();
-		Log.d("postcorrecting", string);
+		return newString;
 	}
 	
 	public String toString() 

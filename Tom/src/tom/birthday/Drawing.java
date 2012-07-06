@@ -10,7 +10,7 @@ public class Drawing {
 	Drawing(String a, String b) {this.s = a.concat(b);}
 	
 	int getLength() {return s.length();}
-	int get(int i) {return s.charAt(i);}
+	int get(int i) {return Integer.parseInt(""+s.charAt(i));}
 	
 	String getUpTo/*not inclusive*/(int i) {return s.substring(0, i);}
 	String getAfter(int i) {return s.substring(i);}
@@ -56,7 +56,7 @@ public class Drawing {
 					first = s.charAt((int)Math.floor(Math.random()*9));
 				}
 				char second = '0';
-				while(second=='0')
+				while(second=='0'&&second==first)
 				{
 					second = s.charAt((int)Math.floor(Math.random()*9));
 				}

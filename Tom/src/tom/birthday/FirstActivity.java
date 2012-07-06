@@ -1,36 +1,37 @@
 package tom.birthday;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.KeyguardManager;
 import android.app.KeyguardManager.KeyguardLock;
-import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.util.Log;
-import android.view.GestureDetector;
-import android.view.GestureDetector.SimpleOnGestureListener;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
-import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
+import android.widget.Spinner;
 
 public class FirstActivity extends Activity{
    
-	Judge judge;
-	String s = "";
-	GestureDetector detector;
+	private Judge judge;
+	private String s = "";
 	
-	Bitmap originalButton;
-	Bitmap wrongbutton;
-	Bitmap rightbutton;
+	private Bitmap originalButton;
+	private Bitmap wrongbutton;
+	private Bitmap rightbutton;
+	
+	private int vibratetime = 40;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,6 +41,8 @@ public class FirstActivity extends Activity{
         originalButton = BitmapFactory.decodeResource(getResources(),R.drawable.original_button);
     	wrongbutton = BitmapFactory.decodeResource(getResources(),R.drawable.wrong_button);
     	rightbutton = BitmapFactory.decodeResource(getResources(),R.drawable.right_button);
+    	
+    	judge = new Judge();
         
         final View rellayout = findViewById(R.id.relativelayout);
         
@@ -118,7 +121,7 @@ public class FirstActivity extends Activity{
 	                        if(which!='0'&&!s.contains(""+which))
 	                        {
 	                        	Vibrator vib = (Vibrator)getSystemService(VIBRATOR_SERVICE);
-	                        	vib.vibrate(40);
+	                        	vib.vibrate(vibratetime);
 	                        	s+=which;
 	                        }
 	                        
@@ -132,10 +135,43 @@ public class FirstActivity extends Activity{
 
     }
     
-    public void onStart()
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
     {
-    	super.onStart();
-    	judge = new Judge();
+    	menu.add("Change Vibrate");
+    	return super.onCreateOptionsMenu(menu);
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+    	if(item.getTitle().equals("Change Vibrate"))
+    	{
+    		final View menuView = ((LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE)).inflate(R.layout.vibrate_popup, null);
+    		final AlertDialog alert = new AlertDialog.Builder(this)
+    	    .setTitle("Set vibrate length:")
+    	    .setView(menuView)
+		    .show();
+    		
+    		((Spinner)menuView.findViewById(R.id.optionSpinner)).setSelection((vibratetime/10)-4);
+    		
+    		menuView.findViewById(R.id.okbutton).setOnClickListener(new OnClickListener() {
+				
+				public void onClick(View v) {
+					String item = (String)((Spinner)menuView.findViewById(R.id.optionSpinner)).getSelectedItem();
+					if(item!=null)
+					{
+						vibratetime = Integer.parseInt(item);
+					}
+					alert.dismiss();
+				}
+			});
+    		menuView.findViewById(R.id.cancelbutton).setOnClickListener(new OnClickListener() {
+				public void onClick(View v) {
+					alert.dismiss();
+				}
+			});
+    	}
+    	return super.onOptionsItemSelected(item);
     }
    
 	private void reset()
@@ -173,7 +209,7 @@ public class FirstActivity extends Activity{
 		s = "";
 	}
 	
-	private void resetImages()
+	/*private void resetImages()
 	{
 		RelativeLayout layout = (RelativeLayout) findViewById(R.id.relativelayout);
 		for(int i = 0; i<layout.getChildCount(); i++)
@@ -185,7 +221,7 @@ public class FirstActivity extends Activity{
 				view.setImageBitmap(originalButton);
 			}
 		}
-	}
+	}*/
 	
 	private void onSuccess()
 	{
