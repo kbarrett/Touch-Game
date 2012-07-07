@@ -13,6 +13,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -48,6 +49,11 @@ public class FirstActivity extends Activity{
 		public LineDraw(Context context) {
 			super(context);
 		}
+		
+		public LineDraw(Context context, AttributeSet attrs)
+		{
+			super(context, attrs);
+		}
 
 		@Override
 		protected void onDraw(Canvas canvas) 
@@ -58,8 +64,6 @@ public class FirstActivity extends Activity{
 		        p.setColor(Color.WHITE);
 			    p.setStrokeWidth(15);
 			    canvas.drawLine(xvalues[i][0], yvalues[i][0], xvalues[i][1], yvalues[i][1], p);
-			    
-			    canvas.drawCircle(0.5f*(xvalues[i][1] + xvalues[i][0]), 0.5f*(yvalues[i][1] + yvalues[i][0]), 30, p);
 			}
 		}
 	}
@@ -79,7 +83,18 @@ public class FirstActivity extends Activity{
         
     	final LineDraw lineDraw = new LineDraw(this);
     	lineDraw.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-        ((RelativeLayout)rellayout).addView(lineDraw);
+    	
+    	RelativeLayout rel = ((RelativeLayout)rellayout);
+    	rel.addView(lineDraw);
+    	
+    	for(int i = rel.getChildCount()-1; i>=0; i--)
+    	{
+    		View childView = rel.getChildAt(i);
+    		if(childView instanceof ImageView)
+    		{
+    			childView.bringToFront();
+    		}
+    	}
         
         rellayout.setOnTouchListener(new OnTouchListener(){
         	
