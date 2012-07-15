@@ -33,8 +33,9 @@ public class FirstActivity extends Activity{
 	private String s = "";
 	
 	private Bitmap originalButton;
-	private Bitmap wrongbutton;
-	private Bitmap rightbutton;
+	private Bitmap[] wrongbuttons = new Bitmap[9];
+	private Bitmap[] rightbuttons = new Bitmap[9];
+	private Bitmap[] clickedbuttons = new Bitmap[9];
 	
 	private ImageView previm;
 	
@@ -74,8 +75,36 @@ public class FirstActivity extends Activity{
         setContentView(R.layout.main);
         
         originalButton = BitmapFactory.decodeResource(getResources(),R.drawable.original_button);
-    	wrongbutton = BitmapFactory.decodeResource(getResources(),R.drawable.wrong_button);
-    	rightbutton = BitmapFactory.decodeResource(getResources(),R.drawable.right_button);
+        
+    	wrongbuttons[0] = BitmapFactory.decodeResource(getResources(),R.drawable.wrong_button1);
+    	wrongbuttons[1] = BitmapFactory.decodeResource(getResources(),R.drawable.wrong_button2);
+    	wrongbuttons[2] = BitmapFactory.decodeResource(getResources(),R.drawable.wrong_button3);
+    	wrongbuttons[3] = BitmapFactory.decodeResource(getResources(),R.drawable.wrong_button4);
+    	wrongbuttons[4] = BitmapFactory.decodeResource(getResources(),R.drawable.wrong_button5);
+    	wrongbuttons[5] = BitmapFactory.decodeResource(getResources(),R.drawable.wrong_button6);
+    	wrongbuttons[6] = BitmapFactory.decodeResource(getResources(),R.drawable.wrong_button7);
+    	wrongbuttons[7] = BitmapFactory.decodeResource(getResources(),R.drawable.wrong_button8);
+    	wrongbuttons[8] = BitmapFactory.decodeResource(getResources(),R.drawable.wrong_button9);
+    	
+    	rightbuttons[0] = BitmapFactory.decodeResource(getResources(),R.drawable.right_button1);
+    	rightbuttons[1] = BitmapFactory.decodeResource(getResources(),R.drawable.right_button2);
+    	rightbuttons[2] = BitmapFactory.decodeResource(getResources(),R.drawable.right_button3);
+    	rightbuttons[3] = BitmapFactory.decodeResource(getResources(),R.drawable.right_button4);
+    	rightbuttons[4] = BitmapFactory.decodeResource(getResources(),R.drawable.right_button5);
+    	rightbuttons[5] = BitmapFactory.decodeResource(getResources(),R.drawable.right_button6);
+    	rightbuttons[6] = BitmapFactory.decodeResource(getResources(),R.drawable.right_button7);
+    	rightbuttons[7] = BitmapFactory.decodeResource(getResources(),R.drawable.right_button8);
+    	rightbuttons[8] = BitmapFactory.decodeResource(getResources(),R.drawable.right_button9);
+    	
+    	clickedbuttons[0] = BitmapFactory.decodeResource(getResources(),R.drawable.clicked_button1);
+    	clickedbuttons[1] = BitmapFactory.decodeResource(getResources(),R.drawable.clicked_button2);
+    	clickedbuttons[2] = BitmapFactory.decodeResource(getResources(),R.drawable.clicked_button3);
+    	clickedbuttons[3] = BitmapFactory.decodeResource(getResources(),R.drawable.clicked_button4);
+    	clickedbuttons[4] = BitmapFactory.decodeResource(getResources(),R.drawable.clicked_button5);
+    	clickedbuttons[5] = BitmapFactory.decodeResource(getResources(),R.drawable.clicked_button6);
+    	clickedbuttons[6] = BitmapFactory.decodeResource(getResources(),R.drawable.clicked_button7);
+    	clickedbuttons[7] = BitmapFactory.decodeResource(getResources(),R.drawable.clicked_button8);
+    	clickedbuttons[8] = BitmapFactory.decodeResource(getResources(),R.drawable.clicked_button9);
     	
     	judge = new Judge();
     	
@@ -127,6 +156,7 @@ public class FirstActivity extends Activity{
 		                        case R.id.topleft :
 		                        { 
 		                        	which = '1'; 
+		                        	
 		                        	break; 
 		                        }
 		                        case R.id.topmiddle :
@@ -205,6 +235,8 @@ public class FirstActivity extends Activity{
 			                        	
 			                        	previm = (ImageView) view;
 			                        }
+			                        
+			                        previm.setImageBitmap(clickedbuttons[current]);
 		                        }
 	                        }
 	                        
@@ -299,8 +331,9 @@ public class FirstActivity extends Activity{
 			
 			if(s.contains(i+""))
 			{				
-				if(isNice) {view.setImageBitmap(rightbutton);}
-				else {view.setImageBitmap(wrongbutton);}
+				Log.d("s.indexOf(i)", s.indexOf(i+"")+"");
+				if(isNice) {view.setImageBitmap(rightbuttons[s.indexOf(i+"")]);}
+				else {view.setImageBitmap(wrongbuttons[s.indexOf(i+"")]);}
 			}
 			else
 			{
